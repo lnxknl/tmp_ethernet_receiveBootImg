@@ -1,0 +1,86 @@
+diff --git a/kernel/source/main.c b/kernel/source/main.c
+index b055934..6c7c1d0 100644
+--- a/kernel/source/main.c
++++ b/kernel/source/main.c
+@@ -13,10 +13,10 @@ typedef void (*KernelFunction)();
+ uint32_t ReceivedBytes;
+ uint32_t KernelSize;
+ 
+-KernelFunction Kernel = (KernelFunction) KERNEL_ADDRESS;
++KernelFunction Kernel = (KernelFunction) KERNEL_ADDRESS;// @NOTE 
+ extern EthbootPacket* SndPacket;
+ 
+-void BootNewKernel()
++void BootNewKernel()// @NOTE 
+ {
+ 	InterruptSystemDisconnectIRQ(3);
+ 	InterruptSystemDisconnectIRQ(9);
+@@ -29,7 +29,7 @@ void BootNewKernel()
+ 	
+ 	DisposeMemory();
+ 
+-	Kernel();
++	Kernel();// @NOTE 
+ }
+ 
+ void ProcessPacket(EthbootPacket* RecvPacket)
+@@ -55,7 +55,7 @@ void ProcessPacket(EthbootPacket* RecvPacket)
+ 	}
+ 	else if (RecvPacket->Code == CODE_SEND_KERNEL_PART)
+ 	{
+-		MemoryCopy(RecvPacket->Data, (void*)(KERNEL_ADDRESS + ReceivedBytes), RecvPacket->DataLength);
++		MemoryCopy(RecvPacket->Data, (void*)(KERNEL_ADDRESS + ReceivedBytes), RecvPacket->DataLength);// @NOTE 
+ 		ReceivedBytes += RecvPacket->DataLength;
+ 			
+ 		if (ReceivedBytes < KernelSize)
+@@ -72,7 +72,7 @@ void ProcessPacket(EthbootPacket* RecvPacket)
+ 			SndPacket->DataLength = 0;
+ 			SendPacket(SndPacket);
+ 			
+-			BootNewKernel();
++			BootNewKernel();// @NOTE 
+ 		}
+ 	}
+ }
+diff --git a/linux/main.c b/linux/main.c
+index 0f3f840..7b68a3e 100644
+--- a/linux/main.c
++++ b/linux/main.c
+@@ -22,7 +22,7 @@ void ReadKernel(const char* Path)
+ 	fclose(File);
+ }
+ 
+-void ProcessPacket(EthbootPacket* Packet)
++void ProcessPacket(EthbootPacket* Packet)// @NOTE 
+ {
+ 	if (Packet->Code == CODE_SEND_MESSAGE)
+ 	{
+@@ -40,8 +40,8 @@ void ProcessPacket(EthbootPacket* Packet)
+ 		SndPacket->Code = CODE_SEND_KERNEL_PART;
+ 		SndPacket->DataLength = (KernelSize - BytesSent - 1024) >= 0 ? 1024 : KernelSize % 1024;
+ 		memcpy(SndPacket->Data, Kernel + BytesSent, SndPacket->DataLength);
+-		BytesSent += SndPacket->DataLength;
+-		SendPacket(SndPacket);
++		BytesSent += SndPacket->DataLength;// @NOTE 
++		SendPacket(SndPacket);// @NOTE 
+ 		
+ 		printf("Uploading kernel... %u%% (%u/%u)%s", (int)(((float)BytesSent / KernelSize) * 100), BytesSent, KernelSize, "\r");
+ 		
+@@ -50,7 +50,7 @@ void ProcessPacket(EthbootPacket* Packet)
+ 	}
+ 	else if (Packet->Code == CODE_BOOTING)
+ 	{
+-		Running = 0;
++		Running = 0;// @NOTE 
+ 	}
+ }
+ 
+@@ -90,7 +90,7 @@ int main(int argc, char **argv)
+ 	SndPacket->DataLength = 0;
+ 	SendPacket(SndPacket);
+ 	
+-	while(Running)
++	while(Running)// @NOTE 
+ 	{
+ 		EthbootPacket* RecvPacket;
+ 		
