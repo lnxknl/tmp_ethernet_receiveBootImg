@@ -13,10 +13,10 @@ typedef void (*KernelFunction)();
 uint32_t ReceivedBytes;
 uint32_t KernelSize;
 
-KernelFunction Kernel = (KernelFunction) KERNEL_ADDRESS;// @NOTE 
+KernelFunction Kernel = (KernelFunction) KERNEL_ADDRESS;
 extern EthbootPacket* SndPacket;
 
-void BootNewKernel()// @NOTE 
+void BootNewKernel()
 {
 	InterruptSystemDisconnectIRQ(3);
 	InterruptSystemDisconnectIRQ(9);
@@ -29,7 +29,7 @@ void BootNewKernel()// @NOTE
 	
 	DisposeMemory();
 
-	Kernel();// @NOTE 
+	Kernel();
 }
 
 void ProcessPacket(EthbootPacket* RecvPacket)
@@ -55,7 +55,7 @@ void ProcessPacket(EthbootPacket* RecvPacket)
 	}
 	else if (RecvPacket->Code == CODE_SEND_KERNEL_PART)
 	{
-		MemoryCopy(RecvPacket->Data, (void*)(KERNEL_ADDRESS + ReceivedBytes), RecvPacket->DataLength);// @NOTE 
+		MemoryCopy(RecvPacket->Data, (void*)(KERNEL_ADDRESS + ReceivedBytes), RecvPacket->DataLength);
 		ReceivedBytes += RecvPacket->DataLength;
 			
 		if (ReceivedBytes < KernelSize)
@@ -72,7 +72,7 @@ void ProcessPacket(EthbootPacket* RecvPacket)
 			SndPacket->DataLength = 0;
 			SendPacket(SndPacket);
 			
-			BootNewKernel();// @NOTE 
+			BootNewKernel();
 		}
 	}
 }

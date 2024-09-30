@@ -22,7 +22,7 @@ void ReadKernel(const char* Path)
 	fclose(File);
 }
 
-void ProcessPacket(EthbootPacket* Packet)// @NOTE 
+void ProcessPacket(EthbootPacket* Packet)
 {
 	if (Packet->Code == CODE_SEND_MESSAGE)
 	{
@@ -40,8 +40,8 @@ void ProcessPacket(EthbootPacket* Packet)// @NOTE
 		SndPacket->Code = CODE_SEND_KERNEL_PART;
 		SndPacket->DataLength = (KernelSize - BytesSent - 1024) >= 0 ? 1024 : KernelSize % 1024;
 		memcpy(SndPacket->Data, Kernel + BytesSent, SndPacket->DataLength);
-		BytesSent += SndPacket->DataLength;// @NOTE 
-		SendPacket(SndPacket);// @NOTE 
+		BytesSent += SndPacket->DataLength;
+		SendPacket(SndPacket);
 		
 		printf("Uploading kernel... %u%% (%u/%u)%s", (int)(((float)BytesSent / KernelSize) * 100), BytesSent, KernelSize, "\r");
 		
@@ -50,7 +50,7 @@ void ProcessPacket(EthbootPacket* Packet)// @NOTE
 	}
 	else if (Packet->Code == CODE_BOOTING)
 	{
-		Running = 0;// @NOTE 
+		Running = 0;
 	}
 }
 
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 	SndPacket->DataLength = 0;
 	SendPacket(SndPacket);
 	
-	while(Running)// @NOTE 
+	while(Running)
 	{
 		EthbootPacket* RecvPacket;
 		
